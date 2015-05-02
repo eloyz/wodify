@@ -1,0 +1,5 @@
+selenium==2.45.0
+click==3.3
+Flask==0.10.1
+ipython==3.0.0
+xlrd==0.9.3

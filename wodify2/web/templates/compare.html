@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crossboard</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="{{ url_for('static', filename='chosen_v1/chosen.jquery.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='chosen_v1/chosen.css')}}">
+</head>
+<body>
+
+    <form>
+    <select data-placeholder="Select an athlete" id="select-athlete"
+        class="chosen-select" multiple style="width:500px;" tabindex="1">
+        <option value></option>
+        {% for athlete in athletes %}
+        <option value="{{ athlete[0] }}">{{ athlete[1] }}</option>
+        {% endfor %}
+    </select>
+    </form>
+
+    <div id="athlete-bar-graph" style="width:100%; height:400px;"></div>
+
+</body>
+
+<script>
+
+    $('#athlete-bar-graph').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Max Weights'
+        },
+        xAxis: {
+            categories: ['Clean', 'Snatch', 'Back Squat']
+        },
+        yAxis: {
+            title: {
+                text: 'Weights'
+            }
+        },
+        // plotOptions: {
+        //     column: {
+        //         dataLabels: {
+        //             enabled: true
+        //         },
+        //         enableMouseTracking: true
+        //     }
+        // },
+        series: [{
+            name: "Eloy",
+            data: [235, 185, 290]
+        }],
+        dataLabels: {
+            enabled: true,
+            rotation: -90,
+            color: '#FFFFFF',
+            align: 'right',
+            format: '{point.y:.1f}', // one decimal
+            y: 10, // 10 pixels down from the top
+            style: {
+                fontSize: '13px',
+                fontFamily: 'Verdana, sans-serif'
+            }
+        }
+    });
+
+    var chart = $('#athlete-bar-graph').highcharts();
+
+    var update_chart = function(uuid_list){
+
+        while(chart.series.length > 0) {
+            chart.series[0].remove(true);
+        }
+
+        if(!uuid_list){
+            return;
+        }
+
+        var url = '{{ url_for('athlete_data') }}?uuids=' + uuid_list.join();
+
+        $.getJSON(url, function(data) {
+
+            chart.xAxis[0].setCategories(data['categories']);
+
+            $.each(data['series'], function(index, series) {
+            //     // chart.series[index].setData(series)
+
+                var uuid = uuid_list[index];
+                // var name = $('#select-athlete').val(uuid).find(':selected').text()
+
+                // console.log('series length', data['series'].length);
+
+                chart.addSeries({
+                    name: series['name'],
+                    data: series['data']
+                })
+
+            });
+
+        });
+
+    };
+
+    $(".chosen-select").chosen().change(function(event) {
+        var target = $(event.target);
+        var uuid_list = target.val();
+        update_chart(uuid_list);
+    });
+
+
+
+</script>
+
+
+</html>

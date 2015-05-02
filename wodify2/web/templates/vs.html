@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <title>Crossboard</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+	<div id="container" style="width:100%; height:400px;"></div>
+</body>
+
+<script>
+$(function () { 
+    $('#container').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Max Weight'
+        },
+        xAxis: {
+            categories: {{ athlete1.weights.keys()|safe }}
+        },
+        yAxis: {
+            title: {
+                text: 'Max Weight'
+            }
+        },
+        series: [{
+            name: '{{ athlete1.name }}',
+            data: {{ athlete1.weights.values()|safe }}
+        }, {
+            name: '{{ athlete2.name }}',
+            data: {{ athlete2.weights.values()|safe }}
+        }]
+    });
+});
+</script>
+
+
+</html>
